@@ -1,1 +1,2 @@
-qwerty
+def function():
+    print("stuff")
