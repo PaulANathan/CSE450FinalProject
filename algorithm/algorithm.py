@@ -1,2 +1,2 @@
-def function():
-    print("stuff")
+
+class
