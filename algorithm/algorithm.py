@@ -51,17 +51,17 @@ class RearrangableDynamicSteinerTree(object):
 
         for i in range(1, self.num_requests+1):
             # Si-1
-            print(i)
             vertice_set = copy.deepcopy(self.tree_nodes_t[i-1])
             terminal_set = copy.deepcopy(self.terminals_t[i-1])
             edge_matrix = copy.deepcopy(self.edge_matrix_t[i-1])
 
             ri, command = self.change_requests[i-1]
+            print(ri, command)
             if command == "add":
                 # Si = Si-1 U {ri}
-                if self.is_terminal[ri]:
-                    if ri not in terminal_set:
-                        terminal_set.append(ri)
+                # if self.is_terminal[ri]:
+                if ri not in terminal_set:
+                    terminal_set.append(ri)
 
                 if ri not in vertice_set:
                     vertice_set.append(ri)
@@ -71,11 +71,11 @@ class RearrangableDynamicSteinerTree(object):
 
             elif command == "remove":
                 # Si = Si-1 - {ri}
-                if self.is_terminal[ri]:
-                    if ri in terminal_set:
-                        terminal_set.remove(ri)
-                # if ri in vertice_set:
-                #     vertice_set.remove(ri)
+                # if self.is_terminal[ri]:
+                if ri in terminal_set:
+                    terminal_set.remove(ri)
+                if ri in vertice_set:
+                    vertice_set.remove(ri)
                 # remove(T, S)
                 self._remove_node(vertice_set, terminal_set, edge_matrix)
             else:
@@ -104,17 +104,20 @@ class RearrangableDynamicSteinerTree(object):
                 edges += [(node, i)]
         # sort the edges
         edges = sorted(edges, key=lambda p: self.cost[p[0]][p[1]])
+        print(edges)
         # select the minimum cost edge (v, w1)
         # subtract (v, w1) from W
         _, w1 = edges.pop(0)
         # add (v, w1) to edge_matrix
         self.add_edge(node, w1, edge_matrix)
         # add v to vertice_set
-        vertice_set += [w1]
+        if w1 not in vertice_set:
+            vertice_set += [w1]
         # while W is not empty
         while len(edges) > 0:
             # find the minimum edge in W (v, w1)
             _, w1 = edges.pop(0)
+            print(w1)
             # remove (v, w1) from W
             # find the single path connecting (v, w1) i.e p(v, w1; T);
             path = self.get_path_connecting(node, w1, edge_matrix)
@@ -144,12 +147,12 @@ class RearrangableDynamicSteinerTree(object):
         non_terminals = [node for node in vertice_set if node not in terminal_set]
         # for each node in W
         for node in non_terminals:
-            if self.degree(node, edge_matrix) == 1:
+            degree =self.degree(node, edge_matrix)
+            if degree == 1:
                 # remove node
                 x1 = self.get_neighbors(node, edge_matrix)[0]
                 self.remove_edge(node, x1, edge_matrix)
-                pass
-            if self.degree(node, edge_matrix) == 2:
+            elif degree == 2:
                 # x1 and x2 are nodes adjacent to node
                 neighbors = self.get_neighbors(node, edge_matrix)
                 x1, x2 = neighbors[0], neighbors[1]
@@ -212,6 +215,7 @@ class RearrangableDynamicSteinerTree(object):
 
         if not found_v:
             # maybe print debug info
+            print(edge_matrix)
             assert False, "You searched for a path connecting two nodes which " \
                           "were not connected. you should feel much shame"
 
@@ -275,7 +279,7 @@ if __name__ == "__main__":
     edge_costs = [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
     num_requests = 3
     change_requests = [[1, "add"], [2, "add"], [1, "remove"]]
-    terminals = [1, 1, 1]
+    terminals = [1, 0, 1]
     initial_node = 0
     delta = 1.5
 
@@ -286,6 +290,14 @@ if __name__ == "__main__":
     l.run_eba_algorithm()
 
     print(l.get_edge_matrix_at_time(0))
+    print(l.tree_nodes_t[0])
+    print("")
     print(l.get_edge_matrix_at_time(1))
+    print(l.tree_nodes_t[1])
+    print("")
     print(l.get_edge_matrix_at_time(2))
+    print(l.tree_nodes_t[2])
+    print("")
     print(l.get_edge_matrix_at_time(3))
+    print(l.tree_nodes_t[3])
+    print("")
