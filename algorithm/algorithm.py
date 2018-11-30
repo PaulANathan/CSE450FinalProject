@@ -40,6 +40,8 @@ class RearrangableDynamicSteinerTree(object):
         self.edge_matrix_t = [ [[0 for i in range(self.num_nodes)] for j in
                                 range(self.num_nodes)] ]
 
+    def get_edge_matrix_at_time(self, time):
+        return self.edge_matrix_t[time]
 
     def run_eba_algorithm(self):
         """ Runs the Edge Bounded algorithm outlined in the paper Dynamic
@@ -56,6 +58,10 @@ class RearrangableDynamicSteinerTree(object):
             ri, command = self.change_requests[i]
             if command == "add":
                 # Si = Si-1 U {ri}
+                if self.is_terminal[ri]:
+                    if ri not in terminal_set:
+                        terminal_set.append(ri)
+
                 if ri not in vertice_set:
                     vertice_set.append(ri)
 
@@ -63,13 +69,14 @@ class RearrangableDynamicSteinerTree(object):
                 self._add_node(ri, vertice_set, terminal_set, edge_matrix)
 
             elif command == "remove":
-
                 # Si = Si-1 - {ri}
-                if ri in vertice_set:
-                    vertice_set.remove(ri)
-
-
-                self._remove_node(ri, vertice_set, terminal_set, edge_matrix)
+                if self.is_terminal[ri]:
+                    if ri in terminal_set:
+                        terminal_set.remove(ri)
+                # if ri in vertice_set:
+                #     vertice_set.remove(ri)
+                # remove(T, S)
+                self._remove_node(vertice_set, terminal_set, edge_matrix)
             else:
                 raise ValueError("unrecognized command {0}".format(command))
 
