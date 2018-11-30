@@ -275,7 +275,7 @@ if __name__ == "__main__":
     edge_costs = [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
     num_requests = 3
     change_requests = [[1, "add"], [2, "add"], [1, "remove"]]
-    terminals = [1, 1, 1]
+    terminals = [1, 0, 1]
     initial_node = 0
     delta = 1.5
 
