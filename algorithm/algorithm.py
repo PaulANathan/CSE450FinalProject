@@ -1,3 +1,4 @@
+import copy
 
 class RearrangableDynamicSteinerTree(object):
 
@@ -48,14 +49,14 @@ class RearrangableDynamicSteinerTree(object):
          Steiner Tree Problem. Imase & Waxman (1989) """
         i = 0
 
-        for i in range(1, self.num_requests):
+        for i in range(1, self.num_requests+1):
             # Si-1
             print(i)
-            vertice_set = self.tree_nodes_t[i-1].copy()
-            terminal_set = self.terminals_t[i-1].copy()
-            edge_matrix = self.edge_matrix_t[i-1].copy()
+            vertice_set = copy.deepcopy(self.tree_nodes_t[i-1])
+            terminal_set = copy.deepcopy(self.terminals_t[i-1])
+            edge_matrix = copy.deepcopy(self.edge_matrix_t[i-1])
 
-            ri, command = self.change_requests[i]
+            ri, command = self.change_requests[i-1]
             if command == "add":
                 # Si = Si-1 U {ri}
                 if self.is_terminal[ri]:
@@ -118,10 +119,10 @@ class RearrangableDynamicSteinerTree(object):
             # find the single path connecting (v, w1) i.e p(v, w1; T);
             path = self.get_path_connecting(node, w1, edge_matrix)
             # find the maximum edge in that path e
-            max_edge, max_cost = self.max_edge_in_path(path, edge_matrix)
+            max_edge, max_cost = self.max_edge_in_path(path)
 
             # if cost(e) > delta * cost(v, w1) ->
-            if cost_max > delta * self.cost[node][w1]:
+            if max_cost > delta * self.cost[node][w1]:
                 # T := T - e + (v, w1)
                 # remove e from edge_matrix
                 self.remove_edge(max_edge[0], max_edge[1], edge_matrix)
@@ -200,7 +201,7 @@ class RearrangableDynamicSteinerTree(object):
             s = frontier.pop()
             closed.add(s)
 
-            if node == v:
+            if s == v:
                 found_v = True
                 break
 
@@ -274,7 +275,7 @@ if __name__ == "__main__":
     edge_costs = [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
     num_requests = 3
     change_requests = [[1, "add"], [2, "add"], [1, "remove"]]
-    terminals = [1, 0, 1]
+    terminals = [1, 1, 1]
     initial_node = 0
     delta = 1.5
 
@@ -283,3 +284,8 @@ if __name__ == "__main__":
                                        delta)
     l.get_edge_matrix_at_time(0)
     l.run_eba_algorithm()
+
+    print(l.get_edge_matrix_at_time(0))
+    print(l.get_edge_matrix_at_time(1))
+    print(l.get_edge_matrix_at_time(2))
+    print(l.get_edge_matrix_at_time(3))
