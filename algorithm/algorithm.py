@@ -103,7 +103,7 @@ class RearrangableDynamicSteinerTree(object):
         edges = sorted(edges, key=lambda p: self.cost[p[0]][p[1]])
         # select the minimum cost edge (v, w1)
         # subtract (v, w1) from W
-        _, w1 = edges.popleft()
+        _, w1 = edges.pop(0)
         # add (v, w1) to edge_matrix
         self.add_edge(node, w1, edge_matrix)
         # add v to vertice_set
@@ -111,7 +111,7 @@ class RearrangableDynamicSteinerTree(object):
         # while W is not empty
         while len(edges) > 0:
             # find the minimum edge in W (v, w1)
-            _, w1 = edges.popleft()
+            _, w1 = edges.pop(0)
             # remove (v, w1) from W
             # find the single path connecting (v, w1) i.e p(v, w1; T);
             path = self.get_path_connecting(node, w1, edge_matrix)
