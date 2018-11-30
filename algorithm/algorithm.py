@@ -48,8 +48,9 @@ class RearrangableDynamicSteinerTree(object):
          Steiner Tree Problem. Imase & Waxman (1989) """
         i = 0
 
-        for i in range(1, self.num_requests+1):
+        for i in range(1, self.num_requests):
             # Si-1
+            print(i)
             vertice_set = self.tree_nodes_t[i-1].copy()
             terminal_set = self.terminals_t[i-1].copy()
             edge_matrix = self.edge_matrix_t[i-1].copy()
@@ -79,7 +80,9 @@ class RearrangableDynamicSteinerTree(object):
             else:
                 raise ValueError("unrecognized command {0}".format(command))
 
-        pass
+            self.tree_nodes_t.append(vertice_set)
+            self.terminals_t.append(terminal_set)
+            self.edge_matrix_t.append(edge_matrix)
 
     def _add_node(self, node, vertice_set, terminal_set, edge_matrix):
         """ Add subroutine
@@ -265,3 +268,18 @@ def index_of(i, l):
         if l[index] == i:
             ret_index = index
     return ret_index
+
+if __name__ == "__main__":
+    num_nodes = 3
+    edge_costs = [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
+    num_requests = 3
+    change_requests = [[1, "add"], [2, "add"], [1, "remove"]]
+    terminals = [1, 0, 1]
+    initial_node = 0
+    delta = 1.5
+
+    l = RearrangableDynamicSteinerTree(num_nodes, edge_costs, num_requests,
+                                       change_requests, terminals, initial_node,
+                                       delta)
+    l.get_edge_matrix_at_time(0)
+    l.run_eba_algorithm()
